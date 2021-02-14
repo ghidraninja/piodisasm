@@ -1,0 +1,33 @@
+;
+; Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
+;
+; SPDX-License-Identifier: BSD-3-Clause
+;
+
+.program differential_manchester_tx
+.side_set 1 opt
+
+; Transmit one bit every cycles. In each bit period:
+; - A '0' is encoded as a transition at the start of the bit period
+; - A '1' is encoded as a transition at the start *and* in the middle
+;
+; Side-set bit 0 must be mapped to the data output pin.
+; Autopull must be enabled.
+
+public start:
+initial_high:
+    out x, 1          side 1     ; Start of bit period: always assert transition
+    jmp !x high_0            [6] ; Test the data bit we just shifted out of OSR
+high_1:
+    jmp initial_high  side 0 [7] ; For `1` bits, also transition in the middle
+high_0:
+    jmp initial_low          [7] ; Otherwise, the line is stable in the middle
+
+initial_low:
+    out x, 1          side 0     ; Always shift 1 bit from OSR to X so we can
+    jmp !x low_0             [6] ; branch on it. Autopull refills OSR for us.
+low_1:
+    jmp initial_low   side 1 [7] ; If there are two transitions, return to
+low_0:                           ; initial_low on the next bit. If just one,
+    jmp initial_high         [7] ; the initial line state is flipped!
+
