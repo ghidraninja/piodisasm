@@ -181,7 +181,7 @@ def parse_jmp(instruction: int):
     if condition_string:
         return Instruction("jmp " + condition_string + " label_" + hex(address), address)
     else:
-        return Instruction("jmp " + hex(address))
+        return Instruction("jmp label_" + hex(address), address)
 
 def parse_wait(instruction: int):
     index = instruction & 0b11111
