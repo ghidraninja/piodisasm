@@ -353,7 +353,7 @@ if __name__ == "__main__":
     parser.add_argument("--sideset-optional", dest="sideset_optional", type=bool, default=False, help="Sideset optional.")
     parser.add_argument("--sideset-pindirs", dest="sideset_pindirs", type=bool, default=False, help="Sideset applies to PINDIRS.")
     parser.add_argument("--sideset-enable", dest="sideset_en", type=bool, default=False, help="Whether the sideset enable pin (EXECCTRL_SIDE_EN) is set.")
-    parser.add_argument("pio_file", type=argparse.FileType("r"))
+    parser.add_argument("pio_file", type=argparse.FileType("r"), nargs='?', default=sys.stdin)
     args = parser.parse_args()
     data = bytes.fromhex(args.pio_file.read())
     if len(data) % 2 != 0:
